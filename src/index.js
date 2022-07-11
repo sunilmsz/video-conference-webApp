@@ -40,10 +40,6 @@ app.use(multer().any())
 app.use(cookiParser())
 
 
-
-
-
-
 app.use("/",router)
 mongoose.connect(DBKey,{
     useNewurlParser:true

@@ -37,6 +37,7 @@ html,body{
     cursor: pointer;
 }
 .video-container {
+    
     object-fit: initial;
     -webkit-transform :scaleX(-1); 
     transform   :scaleX(-1);
@@ -48,6 +49,7 @@ html,body{
 
 
 #video-place {
+    flex-wrap:wrap;
     width:100vw;
     height: 95vh;
    display:flex;
