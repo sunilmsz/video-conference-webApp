@@ -49,6 +49,7 @@ html,body{
 
 
 #video-place {
+    overflow-y: auto;
     flex-wrap:wrap;
     width:100vw;
     height: 95vh;
