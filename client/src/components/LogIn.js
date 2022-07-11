@@ -17,7 +17,7 @@ const LogIn = () => {
       setLoadingStatus(true)
     const options = {
       method: "post",
-      url: "http://localhost:3001/users/login",
+      url: "https://mern-meet-up.herokuapp.com/users/login",
       data: ({
         email: email,
         password: password
@@ -26,8 +26,7 @@ const LogIn = () => {
         "Content-Type": "application/json",
         'Accept': 'application/json',
         Authorization: 'Bearer '
-      },
-      withCredentials: true
+      }
     }
     //axios.defaults.withCredentials = true
     const response = axios(options)

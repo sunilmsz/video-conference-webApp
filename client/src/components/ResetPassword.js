@@ -13,7 +13,7 @@ const ResetPassword = () => {
     useEffect(()=> {
         const options = {
             method: "get",
-            url: `http://localhost:3001/${userId}/users/isvrpl/${randomSt}`,
+            url: `https://mern-meet-up.herokuapp.com/${userId}/users/isvrpl/${randomSt}`,
             headers: {
               "Content-Type": "application/json",
               'Accept': 'application/json',
@@ -42,15 +42,14 @@ const ResetPassword = () => {
                 
             const options = {
                 method: "post",
-                url: `http://localhost:3001/${userId}/users/rp/${randomSt}`,
+                url: `https://mern-meet-up.herokuapp.com/${userId}/users/rp/${randomSt}`,
                 data:{
                     password
                 },
                 headers: {
                   "Content-Type": "application/json",
                   'Accept': 'application/json',
-                },
-                withCredentials: true
+                }
               }
                 const response =  axios(options)
                 .then((response)=> {
