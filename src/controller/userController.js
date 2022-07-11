@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken")
 const userModel = require("../models/userModel")
 const nodeMailer = require("nodemailer")
 const { v4: uuidV4 } = require("uuid")
+const dotenv = require("dotenv")
+dotenv.config({path:"./config.env"})
 
 const sendVerificationMail = async (email, subject, data) => {    //nodejs,mongodb,redis,js,authentication,authorisation,projects
     let transporter = nodeMailer.createTransport({
@@ -43,7 +45,7 @@ const register = async (req, res) => {
         const savedData = await userModel.create({ name, email, password, randomEmailSt: { st: randomSt, date: new Date(new Date().getTime() + (4 * 60 * 60 * 1000)) } })
 
         const subject = "Account Verification Email";
-        const data = `<p>Click <a href="http://localhost:3000/${savedData._id}/users/ev/${randomSt}"> here </a> to verify your account</p>`
+        const data = `<p>Click <a href="${process.env.host}/${savedData._id}/users/ev/${randomSt}"> here </a> to verify your account</p>`
         sendVerificationMail(email, subject, data);
         res.status(201).send({ status: true, msg: "Success", data: "Registration Done, Verification mail has been sent" })
     }
@@ -57,9 +59,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
 
-    console.log(req.cookies)
-
-    console.log(req.headers)
     const { email, password } = req.body
     if (!email || !password)
         return res.status(400).send({ status: false, msg: "mandatory field missing" })
@@ -76,7 +75,7 @@ const login = async (req, res) => {
             return res.status(400).send({ status: false, msg: "Verification mail has  already sent to your registered email,please verify email first before login" })
 
         const subject = "Account Verification Email";
-        const data = `<p>Click <a href="http://localhost:3000/${user._id}/users/ev/${uuid}"> here </a> to verify your account</p>`
+        const data = `<p>Click <a href="${process.env.host}/${user._id}/users/ev/${uuid}"> here </a> to verify your account</p>`
         sendVerificationMail(user.email, subject, data)
         await userModel.findByIdAndUpdate(user._id, { randomEmailSt: { st: uuid, date: new Date(new Date().getTime() + (4 * 60 * 60 * 1000)) } })
         return res.status(400).send({ status: false, msg: " New Verification mail has been sent to your registered email,please verify email first before login" })
@@ -119,7 +118,7 @@ const sendResetPasswordLink = async (req, res) => {
         return res.status(400).send({ status: false, msg: "this email is not a registerd email" })
 
     const subject = "Reset Password "
-    const data = `<p>Click <a href="http://localhost:3000/${isValidUser._id}/users/rp/${uuid}"> here </a> to reset your password<br/> this link is valid only for next 20 minutes </p>`
+    const data = `<p>Click <a href="${process.env.host}/${isValidUser._id}/users/rp/${uuid}"> here </a> to reset your password<br/> this link is valid only for next 20 minutes </p>`
     res.status(200).send({ status: true, msg: "Success", data: "Reset Password Link has been sent. " })
     sendVerificationMail(email, subject, data)
     // userModel.findByIdAndUpdate(isValidUser._id, )

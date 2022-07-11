@@ -60,8 +60,9 @@ html,body{
 }
 
 .screen-share {
+    overflow: auto;
     width: 100vw;
-    height: 90vh;
+    height: 95vh;
     box-sizing: border-box;
 }
 
