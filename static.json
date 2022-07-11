@@ -1,5 +1,5 @@
 {
-    "root": "React3/",
+    "root": "client/build",
     
     "routes": {
       "/**": "index.html"
