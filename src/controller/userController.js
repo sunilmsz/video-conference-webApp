@@ -8,14 +8,11 @@ dotenv.config({path:"./config.env"})
 const sendVerificationMail = async (email, subject, data) => {    //nodejs,mongodb,redis,js,authentication,authorisation,projects
     let transporter = nodeMailer.createTransport({
         host: "smtppro.zoho.in",
-        port: 587,
-        secure: false,
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.email,
             pass: process.env.emailPass
-        },
-        tls: {
-            rejectUnauthorized: false
         }
     })
 
