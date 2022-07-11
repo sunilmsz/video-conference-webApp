@@ -47,7 +47,7 @@ const Dashboard = () => {
 
     const options = {
       method: "post",
-      url: "https://mern-meet-up.herokuapp.com/users/dashboard/getRoomId",
+      url: "https://mern-meet-up.herokuapp.com/api/users/dashboard/getRoomId",
       headers: {
         "Content-Type": "application/json",
         'Accept': 'application/json'

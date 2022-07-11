@@ -12,7 +12,7 @@ const ForgotPassword = () => {
             setLoadingStatus(true)
             const options = {
                 method: "post",
-                url: `https://mern-meet-up.herokuapp.com/users/resetPasswordLink`, 
+                url: `https://mern-meet-up.herokuapp.com/api/users/resetPasswordLink`, 
                 data:{
                     email:email
                 },
