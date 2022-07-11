@@ -24,7 +24,7 @@ const Video = () => {
 
     useEffect(() => {
       
-        const socket = (io("http://localhost:3001"))
+        const socket = (io("https://mern-meet-up.herokuapp.com/"))
 
 
         navigator.mediaDevices.getUserMedia({
@@ -45,7 +45,7 @@ const Video = () => {
             // setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
             console.log(stream.getVideoTracks(), "streamObject")
             console.log(stream.getAudioTracks(), "streamObject")
-            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/", port: "3001" })
+            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
             peer.on("open", id => {
                 socket.emit("nuser-joined", roomId, id)
             })
