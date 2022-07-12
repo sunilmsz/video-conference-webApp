@@ -37,7 +37,7 @@ html,body{
     cursor: pointer;
 }
 .video-container {
-    object-fit: contain;
+    object-fit: cover;
     -webkit-transform :scaleX(-1); 
     transform   :scaleX(-1);
     margin-right: 1em;
