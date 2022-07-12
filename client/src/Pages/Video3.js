@@ -4,14 +4,14 @@ import Peer from 'peerjs';
 import { useParams } from 'react-router-dom';
 import { default as VideoComponent } from '../components/Video';
 import { v4 as uuidV4 } from 'uuid';
-
+import { useNavigate, useLocation } from "react-router-dom"
 
 const Video = () => {
 
     const { roomId } = useParams();
     const [videoData, setVideoData] = useState([])
     const [streamData, setStreamData] = useState([])
-    const [disconnectedId, setDisconnectedId] = useState([])
+    const [disconnectedId, setDisconnectedId] = useState(new Set())
     const [screenData, setScreenData] = useState({})
     const [screenStatus, setScreenStatus] = useState(false)
     const [videoStatus, setVideoStatus] = useState(false)
@@ -21,17 +21,20 @@ const Video = () => {
     const [stoppedUser, setStoppedUser] = useState([])
     const callData = useRef()
     const streamObject = useRef()
+    const peerRef = useRef()
+    const socketPeerMap = useRef()
+    const navigate = useNavigate()
 
     useEffect(() => {
       
-        const socket = (io("https://mern-meet-up.herokuapp.com/"))
+        const socket = (io("https://mern-meet-up.herokuapp.com"))
 
 
         navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true
         }).then((stream) => {
-        
+           socketPeerMap.current = new Map()
             socketRef.current = socket;
             streamObject.current = stream;
             console.log("streamObject --->",streamObject)
@@ -45,15 +48,16 @@ const Video = () => {
             // setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
             console.log(stream.getVideoTracks(), "streamObject")
             console.log(stream.getAudioTracks(), "streamObject")
-            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
+            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/", port: "3001" })
             peer.on("open", id => {
                 socket.emit("nuser-joined", roomId, id)
+                peerRef.current = peer
             })
 
             socket.on("user-connected", (peerId, socket_id) => {
                 const call = peer.call(peerId, streamObject.current, { metadata: { sId: socket.id } })
                callData.current.push(call)
-    
+               socketPeerMap.current.set(socket_id,call)
                
                 call.on("stream", userVideoStream => {
                   
@@ -64,7 +68,7 @@ const Video = () => {
             peer.on('call', function (call) {
                 call.answer(streamObject.current);
                callData.current.push(call)
-             
+               socketPeerMap.current.set(call.metadata.sId,call)
                 call.on('stream', function (remoteStream) {
                     setStreamData((data) => [...data, { stream: remoteStream, socket_id: call.metadata.sId, nodisplay: false }])
                 })
@@ -76,22 +80,29 @@ const Video = () => {
             )
 
             socket.on("user-disconnected", (id) => {
-                setDisconnectedId((data) => [...data, id])
+                console.log("peer Connections ---->",peerRef.current.connections)
+
+
+               
+                setDisconnectedId((data) => new Set(data.add(id)))
             })
 
         }).catch((error) => { })
 
         return () => {
-            myVideoData.stream?.getVideoTracks()[0].stop()
-            myVideoData.stream?.getAudioTracks()[0].stop()
+
             socket.disconnect()
+            peerRef.current.destroy()
+            streamObject.current?.getVideoTracks()[0].stop()
+            streamObject.current?.getAudioTracks()[0].stop()
+            
         }
 
 
     }, [])
 
     useEffect(() => {
-        console.log(streamData)
+       
         if (streamData.length > 0) {
             const arr = videoData.map(e => e.id)
             for (let i = 0; i < streamData.length; i++) {
@@ -104,7 +115,7 @@ const Video = () => {
     }, [streamData])
 
 
-    const startStopVideo = () => {
+    const startStopVideo = useCallback(() => {
 
         if (videoStatus) {
             console.log("StartStopVieo if part executed")
@@ -137,10 +148,10 @@ const Video = () => {
 
         }
 
-    }
+    },[videoStatus])
 
 
-    const muteUnmute = () => {
+    const muteUnmute = useCallback(() => {
         if (audioStatus) {
             myVideoData.stream.getAudioTracks()[0].enabled = false;
             setAudioStatus(false)
@@ -150,9 +161,9 @@ const Video = () => {
             myVideoData.stream.getAudioTracks()[0].enabled = true;
             setAudioStatus(true)
         }
-    }
+    },[audioStatus])
 
-    const startScreenShare = () => {
+    const startScreenShare = useCallback(() => {
 
         //socket.emit("screenShared",socket.id)
         if (!screenStatus) {
@@ -171,28 +182,33 @@ const Video = () => {
         }
 
 
-    }
+    },[screenStatus])
+
+  
 
     useEffect(() => {
-        console.log(videoData, " videoData")
-
-    }, [videoData])
-    useEffect(() => {
-        console.log(myVideoData, " MyvideoData")
-
-    }, [myVideoData])
-
-    useEffect(() => {
-        if (disconnectedId.length > 0) {
+        if (disconnectedId.size > 0) {
+            
             console.log("removing element executed")
-            setVideoData(videoData.filter((e) => !disconnectedId.includes(e.id)))
-            setStreamData(streamData.filter((e) => !disconnectedId.includes(e.socket_id)))
+
+            console.log("socketPeerMap",socketPeerMap.current)
+
+            setVideoData(videoData.filter((e) => !disconnectedId.has(e.id)))
+            setStreamData(streamData.filter((e) => !disconnectedId.has(e.socket_id)))
+
+            for(let socket of disconnectedId.values())
+            {       
+                console.log("disconnected socket id",socket)
+                if(socketPeerMap.current.has(socket))
+                {
+                    socketPeerMap.current.get(socket).close();
+                    socketPeerMap.current.delete(socket)
+                    console.log("after closing peer connection--->",peerRef.current.connections)
+                }
+            }
         }
     }, [disconnectedId])
 
-    useEffect(() => {
-        console.log(screenData)
-    }, [screenData])
 
     useEffect(() => {
         console.log("stopped user executed ")
@@ -215,6 +231,11 @@ const Video = () => {
     }, [stoppedUser])
 
 
+    const leaveMeeting = useCallback(()=>{
+
+        navigate("/dashboard",{state:{}})
+
+    },[])
 
 
 
@@ -252,7 +273,7 @@ const Video = () => {
                     <span className='meeting-text margin-left1' onClick={startStopVideo}>{!videoStatus ? "Start Video" : "Stop Video"}</span>
                 </div>
                 <div > <span className='meeting-text ' onClick={startScreenShare}>{!screenStatus ? "Share Screen" : "Stop Screen Share"}</span></div>
-                <div><span className='meeting-text margin-left1 text-danger'>Leave Meeting</span></div>
+                <div><span className='meeting-text margin-left1 text-danger' onClick={leaveMeeting}>Leave</span></div>
             </div>
         </div>
     )

@@ -1,4 +1,4 @@
-import React,{useRef, useState,useEffect} from 'react'
+import React,{useRef, useState,useEffect,memo} from 'react'
 
 const Video = ({id,stream,muted,classStyle}) => {
 
@@ -6,16 +6,12 @@ const Video = ({id,stream,muted,classStyle}) => {
    
 
  useEffect( () => {
-    console.warn("video Component rendered")
     vidRef.current.srcObject = stream;
     vidRef.current.addEventListener('loadedmetadata', () => {
         vidRef.current.play()
     })  
     vidRef.current.muted = muted? true :false
     vidRef.current.classList.add(classStyle) // "video-container"
-
-
-   
 
  },[])
 
@@ -26,4 +22,4 @@ const Video = ({id,stream,muted,classStyle}) => {
   )
 }
 
-export default Video
+export default memo(Video)
