@@ -47,15 +47,16 @@ const Dashboard = () => {
 
     const options = {
       method: "post",
-      url: "https://mern-meet-up.herokuapp.com/api/users/dashboard/getRoomId",
+      url: "http://localhost:3001/users/dashboard/getRoomId",
       headers: {
         "Content-Type": "application/json",
         'Accept': 'application/json'
-      }
+      },
+      withCredentials: true
     }
     axios(options)
       .then((response) => {
-        setMeetLink(`https://mern-meet-up.herokuapp.com/video/${response.data.data._id}`)
+        setMeetLink(`http://localhost:3000/video/${response.data.data._id}`)
         setInviteCode(response.data.data.code)
         setRoomId(response.data.data._id)
       })

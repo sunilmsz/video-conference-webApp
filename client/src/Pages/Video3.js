@@ -27,7 +27,7 @@ const Video = () => {
 
     useEffect(() => {
       
-        const socket = (io("https://mern-meet-up.herokuapp.com"))
+        const socket = (io("http://localhost:3001"))
 
 
         navigator.mediaDevices.getUserMedia({
