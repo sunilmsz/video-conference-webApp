@@ -21,7 +21,7 @@ const Screenshare = () => {
         }).then((stream) => {
             setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
 
-            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/", port: "3001" })
+            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
             peer.on("open", id => {
                 socket.emit("nuser-joined", roomId, id)
             })
