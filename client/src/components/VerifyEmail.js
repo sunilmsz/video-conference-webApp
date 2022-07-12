@@ -8,7 +8,7 @@ const VerifyEmail = () => {
 
     const options = {
         method: "get",
-        url: `http://localhost:3001/${userId}/users/ev/${randomSt}`,
+        url: `https://mern-meet-up.herokuapp.com/${userId}/users/ev/${randomSt}`,
         headers: {
           "Content-Type": "application/json",
           'Accept': 'application/json',

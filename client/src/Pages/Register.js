@@ -17,7 +17,7 @@ const Register = () => {
             setLoadingStatus(true)
             const options = {
                 method: "post",
-                url: "http://localhost:3001/users/register",
+                url: "https://mern-meet-up.herokuapp.com/users/register",
                 data: ({
                     email: email,
                     password: password,
