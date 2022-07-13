@@ -17,7 +17,7 @@ const LogIn = () => {
       setLoadingStatus(true)
     const options = {
       method: "post",
-      url: "https://mern-meet-up.herokuapp.com/api/users/login",
+      url: "/api/users/login",
       data: ({
         email: email,
         password: password

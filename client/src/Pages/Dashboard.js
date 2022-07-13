@@ -87,7 +87,7 @@ const Dashboard = () => {
 
     const options = {
       method: "post",
-      url: "/users/dashboard/getRoomIdByCode",
+      url: "/api/users/dashboard/getRoomIdByCode",
       data:{
         code:jInviteCode
     },
