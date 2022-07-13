@@ -25,10 +25,10 @@ const cors = require("cors")
 const bodyParser = require("body-parser")
 const router = require("./routes/route")
 
-app.use(
-    cors({
-      origin: `https://mern-meet-up.herokuapp.com`
-    }))
+// app.use(
+//     cors({
+//       origin: `https://mern-meet-up.herokuapp.com`
+//     }))
 
 dotenv.config({path:"./config.env"})
 const DBKey = process.env.DB

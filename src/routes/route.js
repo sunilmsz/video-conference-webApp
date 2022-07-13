@@ -17,4 +17,6 @@ router.post("/api/users/resetPasswordLink",userController.sendResetPasswordLink)
 
 router.post("/api/users/dashboard/getRoomId",authentication,dashboardController.getRoomId)
 
+router.post("/api/users/dashboard/getRoomIdByCode",authentication,dashboardController.getRoomIdByCode)
+
 module.exports =router

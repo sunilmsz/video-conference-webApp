@@ -34,4 +34,13 @@ const getRoomId = async(req,res) => {
     return res.status(201).send({status:true,msg:"Success",data:room})
 }
 
-module.exports = {dashboard,getRoomId}
+const getRoomIdByCode = async(req,res) => {
+    const code = req.body.code
+    const room = await roomModel.findOne({code:code}).lean()
+    if(!room)
+    return res.status(400).send({status:false,msg:"Invalid Invite code, please enter correct one"})
+
+    return res.status(200).send({status:true,msg:"Success",data:room._id})
+}
+
+module.exports = {dashboard,getRoomId,getRoomIdByCode}
