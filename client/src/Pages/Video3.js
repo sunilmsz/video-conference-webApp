@@ -95,6 +95,9 @@ const Video = () => {
             peerRef.current.destroy()
             streamObject.current?.getVideoTracks()[0].stop()
             streamObject.current?.getAudioTracks()[0].stop()
+
+            tempStreamObj.current?.getVideoTracks()[0].stop()
+            tempStreamObj.current?.getAudioTracks()[0].stop()
             
         }
 
@@ -206,6 +209,16 @@ const Video = () => {
                 video: true,
                 audio: true
             }).then((stream) => {
+                tempStreamObj.current = streamObject;
+                streamObject.current = stream;
+
+                for(let i=0;i<callData.current.length;i++)
+                {
+                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+                }
+
+
                 setScreenData({ id: 1, stream: stream })
                 setScreenStatus(true)
                 stream.getVideoTracks()[0].addEventListener('ended', () => setScreenStatus(false))
@@ -213,6 +226,15 @@ const Video = () => {
         }
 
         else {
+            streamData.current.getVideoTracks()[0].stop()
+            streamObject.current = tempStreamObj.current;
+
+            for(let i=0;i<callData.current.length;i++)
+                {
+                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+                }
+
             setScreenStatus(false)
         }
 
