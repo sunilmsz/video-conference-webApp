@@ -90,7 +90,10 @@ const Video = () => {
 
         return () => {
 
-            
+            socketRef.disconnect()
+            peerRef.current.destroy()
+            streamObject.current?.getVideoTracks()[0].stop()
+            streamObject.current?.getAudioTracks()[0].stop()
             
         }
 
@@ -117,9 +120,29 @@ const Video = () => {
             console.log("StartStopVieo if part executed")
             myVideoData.stream.getVideoTracks()[0].stop()
             setVideoStatus(false)
-            console.log(myVideoData.stream, "after stopping video")
+
+            navigator.mediaDevices.getUserMedia({
+                video: false,
+                audio: true
+            }).then((stream) => {
+
+                stream.getAudioTracks()[0].enabled=audioStatus
+                streamObject.current=stream
+                setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
+               
+                console.log(myVideoData.stream, "after stopping video")
            
-            socketRef.current.emit("user-video-stopped")
+                 socketRef.current.emit("user-video-stopped")
+
+                for(let i=0;i<callData.current.length;i++)
+                {
+                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+                }
+            })
+            
+
+            
   
         }
         else {
@@ -229,10 +252,7 @@ const Video = () => {
 
     const leaveMeeting = useCallback(()=>{
 
-            socketRef.disconnect()
-            peerRef.current.destroy()
-            streamObject.current?.getVideoTracks()[0].stop()
-            streamObject.current?.getAudioTracks()[0].stop()
+           
 
         navigate("/dashboard",{state:{}})
 
