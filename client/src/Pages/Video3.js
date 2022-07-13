@@ -318,7 +318,7 @@ const Video = () => {
                       
                         : null}
                    {(videoData.map((e) => (
-                        <VideoComponent key={e.id} id={e.id} stream={e.stream} muted={e.muted}  classStyle="video-container" />
+                        <VideoComponent key={e.id} id={e.id} stream={e.stream} muted={e.muted}  classStyle="video-container2" />
                     )))}
                 </div>
             }
