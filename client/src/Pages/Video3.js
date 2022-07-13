@@ -24,6 +24,7 @@ const Video = () => {
     const peerRef = useRef()
     const socketPeerMap = useRef()
     const navigate = useNavigate()
+    const tempStreamObj = useRef()
 
     useEffect(() => {
       
@@ -89,8 +90,8 @@ const Video = () => {
         }).catch((error) => { })
 
         return () => {
-
-            socketRef.disconnect()
+                
+            socketRef.current.disconnect()
             peerRef.current.destroy()
             streamObject.current?.getVideoTracks()[0].stop()
             streamObject.current?.getAudioTracks()[0].stop()
