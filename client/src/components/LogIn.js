@@ -25,7 +25,7 @@ const LogIn = () => {
       headers: {
         "Content-Type": "application/json",
         'Accept': 'application/json',
-        Authorization: 'Bearer '
+        Authorization: 'Bearer'
       }
     }
     //axios.defaults.withCredentials = true
