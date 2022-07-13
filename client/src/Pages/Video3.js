@@ -209,7 +209,7 @@ const Video = () => {
                 video: true,
                 audio: true
             }).then((stream) => {
-                tempStreamObj.current = streamObject;
+                tempStreamObj.current = streamObject.current;
                 streamObject.current = stream;
 
                 for(let i=0;i<callData.current.length;i++)
