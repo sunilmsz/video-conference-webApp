@@ -116,56 +116,71 @@ const Video = () => {
 
     const startStopVideo = useCallback(() => {
 
+
+        
         if (videoStatus) {
             console.log("StartStopVieo if part executed")
-            myVideoData.stream.getVideoTracks()[0].stop()
+            myVideoData.stream.getVideoTracks()[0].enabled =false
             setVideoStatus(false)
-
-            navigator.mediaDevices.getUserMedia({
-                video: false,
-                audio: true
-            }).then((stream) => {
-
-                stream.getAudioTracks()[0].enabled=audioStatus
-                streamObject.current=stream
-                setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
-               
-                console.log(myVideoData.stream, "after stopping video")
+            console.log(myVideoData.stream, "after stopping video")
            
-                 socketRef.current.emit("user-video-stopped")
-
-                for(let i=0;i<callData.current.length;i++)
-                {
-                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
-                }
-            })
-            
-
-            
+            socketRef.current.emit("user-video-stopped")
   
         }
         else {
             console.log("StartStopVieo Else part executed")
-            navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true
-            }).then((stream) => {
+            myVideoData.stream.getVideoTracks()[0].enabled =true
+            setVideoStatus(true)
+        }
+        // if (videoStatus) {
+        //     console.log("StartStopVieo if part executed")
+        //     myVideoData.stream.getVideoTracks()[0].stop()
+        //     setVideoStatus(false)
 
-                stream.getAudioTracks()[0].enabled=audioStatus
-                streamObject.current=stream
-                setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
-                setVideoStatus(true)
+        //     navigator.mediaDevices.getUserMedia({
+        //         audio: true
+        //     }).then((stream) => {
+
+        //         stream.getAudioTracks()[0].enabled=audioStatus
+        //         streamObject.current=stream
+        //         setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
+               
+        //         console.log(myVideoData.stream, "after stopping video")
+           
+        //          socketRef.current.emit("user-video-stopped")
+
+        //         for(let i=0;i<callData.current.length;i++)
+        //         {
+        //             callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+        //         }
+        //     })
+            
+
+            
+  
+        // }
+        // else {
+        //     console.log("StartStopVieo Else part executed")
+        //     navigator.mediaDevices.getUserMedia({
+        //         video: true,
+        //         audio: true
+        //     }).then((stream) => {
+
+        //         stream.getAudioTracks()[0].enabled=audioStatus
+        //         streamObject.current=stream
+        //         setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
+        //         setVideoStatus(true)
                 
 
-                for(let i=0;i<callData.current.length;i++)
-                {
-                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
-                }
-            })
+        //         for(let i=0;i<callData.current.length;i++)
+        //         {
+        //             callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+        //         }
+        //     })
 
-        }
+        // }
 
     },[videoStatus])
 
