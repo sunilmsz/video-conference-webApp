@@ -26,8 +26,7 @@ const LogIn = () => {
         "Content-Type": "application/json",
         'Accept': 'application/json',
         Authorization: 'Bearer '
-      },
-      withCredentials: true
+      }
     }
     //axios.defaults.withCredentials = true
     const response = axios(options)

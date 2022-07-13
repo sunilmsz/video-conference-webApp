@@ -46,8 +46,7 @@ const Video = () => {
             setVideoStatus(true);
             setAudioStatus(true)
             // setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
-            console.log(stream.getVideoTracks(), "streamObject")
-            console.log(stream.getAudioTracks(), "streamObject")
+           
             const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
             peer.on("open", id => {
                 socket.emit("nuser-joined", roomId, id)
