@@ -226,7 +226,7 @@ const Video = () => {
         }
 
         else {
-            streamData.current.getVideoTracks()[0].stop()
+            streamObject.current.getVideoTracks()[0].stop()
             streamObject.current = tempStreamObj.current;
 
             for(let i=0;i<callData.current.length;i++)
