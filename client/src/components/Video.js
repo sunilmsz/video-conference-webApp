@@ -22,4 +22,4 @@ const Video = ({id,stream,muted,classStyle}) => {
   )
 }
 
-export default memo(Video)
+export default Video
