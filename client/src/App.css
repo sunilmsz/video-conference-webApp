@@ -47,6 +47,16 @@ html,body{
 }
 
 
+
+.video-container2 {
+    object-fit: cover;
+ 
+    margin-right: 1em;
+    width :25em;
+    height:20em;
+    box-sizing: border-box;
+}
+
 #video-place {
     overflow-y: auto;
    flex-wrap:wrap;
