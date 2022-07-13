@@ -90,10 +90,7 @@ const Video = () => {
 
         return () => {
 
-            socket.disconnect()
-            peerRef.current.destroy()
-            streamObject.current?.getVideoTracks()[0].stop()
-            streamObject.current?.getAudioTracks()[0].stop()
+            
             
         }
 
@@ -231,6 +228,11 @@ const Video = () => {
 
 
     const leaveMeeting = useCallback(()=>{
+
+            socket.disconnect()
+            peerRef.current.destroy()
+            streamObject.current?.getVideoTracks()[0].stop()
+            streamObject.current?.getAudioTracks()[0].stop()
 
         navigate("/dashboard",{state:{}})
 
