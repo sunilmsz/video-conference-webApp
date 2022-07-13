@@ -229,7 +229,7 @@ const Video = () => {
 
     const leaveMeeting = useCallback(()=>{
 
-            socket.disconnect()
+            socketRef.disconnect()
             peerRef.current.destroy()
             streamObject.current?.getVideoTracks()[0].stop()
             streamObject.current?.getAudioTracks()[0].stop()
