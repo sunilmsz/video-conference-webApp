@@ -9,7 +9,6 @@ const Dashboard = () => {
   const [meetLink, setMeetLink] = useState("")
   const [inviteCode, setInviteCode] = useState("")
   const [jInviteCode,setjInviteCode] = useState("")
-  const [disabled, setDisabled] = useState(false)
   const [roomId,setRoomId]= useState("")
   const [showMeetLink,setShowMeetLink] = useState(false)
   const [showJoinMeet,setShowJoinMeet] = useState(false)
@@ -119,10 +118,6 @@ const Dashboard = () => {
   },[roomId])
 
 
-  if (!showDashboard) {
-    <></>
-  }
-  else
 
     return (
       <>
