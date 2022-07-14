@@ -123,7 +123,7 @@ const Dashboard = () => {
 
   const logOut = useCallback(()=> {
 
-    removeCookie("x-api-key")
+    removeCookie("x-api-key",{ path: '/' })
     navigate("/")
 
   })
