@@ -29,38 +29,66 @@ const Video = () => {
     const navigate = useNavigate()
     const tempStreamObj = useRef()
 
+    const callLogin = async () => {
+        try {
+          const options = {
+            method: "post",
+            url: "/api/users/dashboard",
+            headers: {
+              "Content-Type": "application/json",
+              'Accept': 'application/json'
+            },
+            withCredentials: true
+          }
+          const response = await axios(options)
+          const data = response.data
+          console.log(data)
+          if (data.msg === "Success")
+             {return true;}
+        }
+        catch (error) {
+          if (error.response.data.msg != "Success") {
+            navigate("/")
+          }
+        }
+      }
+  
+
+
     useEffect(() => {
-      
-       
-       
-        navigator.mediaDevices.getUserMedia({
+
+        async function immediate (){
+            
+        if (!location.state)
+         {
+            const response =await  callLogin()
+            if(!response)
+            return
+        }
+       streamObject.current = await  navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true
-        }).then((stream) => {
-          
-            streamObject.current = stream;
-          
-    
+        })
             connect()
-
-        }).catch((error) => { })
-
+        }
+        
+        immediate ()
         return () => {
-                
-            
-            socketRef.current.disconnect()
-            peerRef.current.destroy()
+
+            socketRef.current?.disconnect()
+            peerRef.current?.destroy()
 
             streamObject.current?.getVideoTracks()[0].stop()
             streamObject.current?.getAudioTracks()[0].stop()
             tempStreamObj.current?.getVideoTracks()[0].stop()
             tempStreamObj.current?.getAudioTracks()[0].stop()
-            
+
+
+
+
         }
 
-
     }, [])
-
 
 
     const connect = useCallback( ()=> {
