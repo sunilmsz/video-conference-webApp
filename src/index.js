@@ -60,11 +60,11 @@ io.on("connection",(socket)=> {
     })
 
     socket.on("screenShared",(roomId)=> {
-        socket.to(roomId).emit("screenShared",socket.id)
+        socket.broadcast.to(roomId).emit("screenShared",socket.id)
     })
 
     socket.on("screenSharedStopped",(roomId)=> {
-        socket.to(roomId).emit("screenSharedStopped",socket.id)
+        socket.broadcast.to(roomId).emit("screenSharedStopped",socket.id)
     })
 
     socket.on("user-restarted-video",()=> {
