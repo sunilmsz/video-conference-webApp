@@ -239,8 +239,11 @@ const Video = () => {
         
         if (!screenStatus) {
 
-            if(otherScreenStatus)
-            alert("Someone other's Screen is already shared,At a time only one person can share the screen")
+            if(otherScreenStatus){
+                alert("Someone other's Screen is already shared,At a time only one person can share the screen")
+                return
+            }
+          
 
             navigator.mediaDevices.getDisplayMedia({
                 video: true,
