@@ -141,7 +141,7 @@ const Video = () => {
                 })
             })
         
-            socketRef.current.on("screenSharedStopped",(id)=> {
+            socketRef.current.on("screenSharedStopped",()=> {
                 console.log("screenSharedstop event trigged")
                 setOtherScreenStatus(false)
             })
@@ -258,7 +258,7 @@ const Video = () => {
 
                 setScreenData({ id: socketRef.current.id, stream: stream })
                 setScreenStatus(true)
-                stream.getVideoTracks()[0].addEventListener('ended', () => setScreenStatus(false))
+                stream.getVideoTracks()[0].addEventListener('ended', () => startScreenShare())
             }).catch((error) => { })
         }
 
