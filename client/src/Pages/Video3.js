@@ -47,20 +47,14 @@ const Video = () => {
 
         return () => {
                 
+            
             socketRef.current.disconnect()
             peerRef.current.destroy()
-            if(!screenData)
-            {
-                streamObject.current?.getVideoTracks()[0].stop()
-                streamObject.current?.getAudioTracks()[0].stop()
-            }
-           
-            else
-            {
-                tempStreamObj.current?.getVideoTracks()[0].stop()
+
+            streamObject.current?.getVideoTracks()[0].stop()
+            streamObject.current?.getAudioTracks()[0].stop()
+            tempStreamObj.current?.getVideoTracks()[0].stop()
             tempStreamObj.current?.getAudioTracks()[0].stop()
-            }
-            
             
         }
 
@@ -352,6 +346,11 @@ const Video = () => {
                 {
                     socketPeerMap.current.get(socket).close();
                     socketPeerMap.current.delete(socket)
+                    if(otherScreenStatus.current)
+                    {
+                        setOtherScreenState(false)
+                        otherScreenStatus.current=false
+                    }
                     console.log("after closing peer connection--->",peerRef.current.connections)
                 }
             }
@@ -421,7 +420,7 @@ const Video = () => {
             <div id="meeting-control">
                 <div>
                     <span className='meeting-text margin-left1' onClick={muteUnmute}>{!audioStatus ? "UnMute" : "Mute"}</span>
-                    <span className='meeting-text margin-left1' onClick={startStopVideo}>{!videoStatus ? "Start Video" : "Stop Video" }</span>
+                    <span className='meeting-text margin-left1'onClick={(screenStatus)?()=>{}:startStopVideo}>{!videoStatus ? "Start Video" : "Stop Video" }</span>
                 </div>
                 <div > <span className='meeting-text ' onClick={startScreenShare}>{!screenStatus ? "Share Screen" : "Stop Screen Share"}</span></div>
                 <div><span className='meeting-text margin-left1 text-danger' onClick={leaveMeeting}>Leave</span></div>
