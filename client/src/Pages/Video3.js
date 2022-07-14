@@ -92,6 +92,7 @@ const Video = () => {
             socket.on("screenShared",(id)=> {
                 console.log("screenShared Event triggered")
                 videoData.forEach( (element)=> {
+                    console.log(id,"socketid ------ videodata id-->",element.id)
                         if(id==element.id)
                         {
                             setScreenData({id:id,stream:element.stream})
@@ -321,7 +322,7 @@ const Video = () => {
         <div id="main-video-window">
 
 
-            {screenStatus || otherScreenStatus?
+            {(screenStatus || otherScreenStatus)?
                 <div >
 
                     <VideoComponent classStyle="screen-share" key={screenData.id} id={screenData.id} stream={screenData.stream} muted={screenData.muted} />
