@@ -258,29 +258,33 @@ const Video = () => {
 
                 setScreenData({ id: socketRef.current.id, stream: stream })
                 setScreenStatus(true)
-                stream.getVideoTracks()[0].addEventListener('ended', () => startScreenShare())
+                stream.getVideoTracks()[0].addEventListener('ended', () => stopScreen())
             }).catch((error) => { })
         }
 
         else {
-            streamObject.current.getVideoTracks()[0].stop()
-            streamObject.current = tempStreamObj.current;
-
-            socketRef.current.emit("screenSharedStopped",roomId)
-
-            for(let i=0;i<callData.current.length;i++)
-                {
-                    callData.current[i]?.peerConnection?.getSenders()[0].replaceTrack(streamObject.current.getAudioTracks()[0])
-                    callData.current[i]?.peerConnection?.getSenders()[1].replaceTrack(streamObject.current.getVideoTracks()[0])
-                }
-
-            setScreenStatus(false)
+           stopScreen()
         }
 
 
     },[screenStatus])
 
-  
+  const stopScreen = useCallback( ()=> {
+
+    streamObject.current.getVideoTracks()[0].stop()
+    streamObject.current = tempStreamObj.current;
+
+    socketRef.current.emit("screenSharedStopped",roomId)
+
+    for(let i=0;i<callData.current.length;i++)
+        {
+            callData.current[i]?.peerConnection?.getSenders()[0].replaceTrack(streamObject.current.getAudioTracks()[0])
+            callData.current[i]?.peerConnection?.getSenders()[1].replaceTrack(streamObject.current.getVideoTracks()[0])
+        }
+
+    setScreenStatus(false)
+
+  }, [screenStatus])
 
     useEffect(() => {
         if (disconnectedId.size > 0) {
@@ -368,7 +372,7 @@ const Video = () => {
             <div id="meeting-control">
                 <div>
                     <span className='meeting-text margin-left1' onClick={muteUnmute}>{!audioStatus ? "UnMute" : "Mute"}</span>
-                    <span className='meeting-text margin-left1' onClick={startStopVideo}>{!videoStatus ? "Start Video" : "Stop Video"}</span>
+                    <span className='meeting-text margin-left1' onClick={startStopVideo}>{!videoStatus ? "Start Video" : "Stop Video" }</span>
                 </div>
                 <div > <span className='meeting-text ' onClick={startScreenShare}>{!screenStatus ? "Share Screen" : "Stop Screen Share"}</span></div>
                 <div><span className='meeting-text margin-left1 text-danger' onClick={leaveMeeting}>Leave</span></div>
