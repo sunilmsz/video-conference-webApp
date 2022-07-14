@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [showMeetLink,setShowMeetLink] = useState(false)
   const [showJoinMeet,setShowJoinMeet] = useState(false)
  const [showDashboard,setShowDashboard] = useState(false)
-  const [isLogOut,setIsLogOut] = useState(false)
+  
  
   const isLoggedIn = async () => {
     try {
@@ -42,7 +42,7 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    if (!location.state && !isLogOut)
+    if (!location.state )
     {
     isLoggedIn()
     }
@@ -125,7 +125,7 @@ const Dashboard = () => {
   const logOut = useCallback(()=> {
 
     Cookies.remove("x-api-key")
-   setIsLogOut(true)
+   
     navigate("/")
 
   })

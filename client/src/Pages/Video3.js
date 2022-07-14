@@ -31,68 +31,17 @@ const Video = () => {
 
     useEffect(() => {
       
-        const socket = (io("https://mern-meet-up.herokuapp.com/"))
-
-
+       
+       
         navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true
         }).then((stream) => {
-           socketPeerMap.current = new Map()
-            socketRef.current = socket;
+          
             streamObject.current = stream;
-            console.log("streamObject --->",streamObject)
-            callData.current=[]
-            //     stream.getAudioTracks()[0].enabled == false;
-            
-            setMyVideoData({ id: socket.id, stream: stream, muted: true, nodisplay: false })
-           
-            setVideoStatus(true);
-            setAudioStatus(true)
-            // setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
-           
-            const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
-            peer.on("open", id => {
-                socket.emit("nuser-joined", roomId, id)
-                peerRef.current = peer
-            })
-
-            socket.on("user-connected", (peerId, socket_id) => {
-                const call = peer.call(peerId, streamObject.current, { metadata: { sId: socket.id } })
-               callData.current.push(call)
-               socketPeerMap.current.set(socket_id,call)
-               
-                call.on("stream", userVideoStream => {
-                  
-                    setStreamData((data) => [...data, { stream: userVideoStream, socket_id: socket_id, nodisplay: false }])
-                })
-                setTimeout(()=>emitScreenShare(),0)
-            })
-
-            peer.on('call', function (call) {
-                call.answer(streamObject.current);
-               callData.current.push(call)
-               socketPeerMap.current.set(call.metadata.sId,call)
-                call.on('stream', function (remoteStream) {
-                    setStreamData((data) => [...data, { stream: remoteStream, socket_id: call.metadata.sId, nodisplay: false }])
-                })
-            })
-
-            socket.on("user-video-stopped", (socket_id) => {
-                setStoppedUser([...stoppedUser, socket_id]) 
-            }
-            )
-
-            socket.on("user-disconnected", (id) => {
-                console.log("peer Connections ---->",peerRef.current.connections)
-
-
-               
-                setDisconnectedId((data) => new Set(data.add(id)))
-            })
-
-
-            
+          
+    
+            connect()
 
         }).catch((error) => { })
 
@@ -119,9 +68,69 @@ const Video = () => {
     }, [])
 
 
+
+    const connect = useCallback( ()=> {
+       
+        const socket = (io("/"))
+
+        socketRef.current = socket;
+        const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" ,port:})
+        
+       
+        peer.on("open", id => {
+            socket.emit("nuser-joined", roomId, id)
+            peerRef.current = peer
+        })
+
+        socketPeerMap.current = new Map()
+      
+
+        callData.current=[]
+        //     stream.getAudioTracks()[0].enabled == false;
+        
+        setMyVideoData({ id: socket.id, stream: streamObject.current, muted: true, nodisplay: false })
+       
+        setVideoStatus(true);
+        setAudioStatus(true)
+        // setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
+       
+      
+      
+        socket.on("user-connected", (peerId, socket_id) => {
+            const call = peer.call(peerId, streamObject.current, { metadata: { sId: socket.id } })
+           callData.current.push(call)
+           socketPeerMap.current.set(socket_id,call)
+      
+            call.on("stream", userVideoStream => {
+                setStreamData((data) => [...data, { stream: userVideoStream, socket_id: socket_id, nodisplay: false }])
+            })
+            setTimeout(()=>emitScreenShare(),2000)
+        })
+
+        peer.on('call', function (call) {
+            call.answer(streamObject.current);
+            callData.current.push(call)
+           socketPeerMap.current.set(call.metadata.sId,call)
+            call.on('stream', function (remoteStream) {
+                setStreamData((data) => [...data, { stream: remoteStream, socket_id: call.metadata.sId, nodisplay: false }])
+            })
+        })
+
+        socket.on("user-video-stopped", (socket_id) => {
+            setStoppedUser([...stoppedUser, socket_id]) 
+        }
+        )
+
+        socket.on("user-disconnected", (id) => {
+            //console.log("peer Connections ---->",peer.connections)
+            setDisconnectedId((data) => new Set(data.add(id)))
+        })
+    },[])
+
+
+
+
     
-
-
     useEffect(() => {
        
         if (streamData.length > 0) {
@@ -136,15 +145,20 @@ const Video = () => {
             socketRef.current.on("screenShared",(id)=> {
                 console.log("screenShared Event triggered",id)
                 console.log(streamData)
-                streamData.map( (element)=> {
-                    console.log(id,"socketid ------ streamData id-->",element.socket_id)
-                        if(id==element.socket_id)
-                        {
-                            setScreenData({id:element.socket_id,stream:element.stream})
-                            setOtherScreenState(true)
-                            otherScreenStatus.current =true
-                        }
-                })
+                setTimeout(() => {
+                    streamData.map( (element)=> {
+                        console.log(id,"socketid ------ streamData id-->",element.socket_id)
+                            if(id==element.socket_id)
+                            {
+                                console.log("shared person's video stream --->   ",element.stream.getVideoTracks())
+                                console.log("shared person's audio stream --->   ",element.stream.getAudioTracks())
+
+                                setScreenData({id:element.socket_id,stream:element.stream})
+                                setOtherScreenState(true)
+                                otherScreenStatus.current =true
+                            }
+                    })
+                }, 1000);
             })
         
             socketRef.current.on("screenSharedStopped",()=> {
@@ -192,11 +206,13 @@ const Video = () => {
         //         console.log(myVideoData.stream, "after stopping video")
            
         //          socketRef.current.emit("user-video-stopped")
+        //          console.log("tracks",stream.getTracks())
 
         //         for(let i=0;i<callData.current.length;i++)
         //         {
-        //             callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+        //             console.log("sender Data",callData.current[i].peerConnection.getSenders())
+        //             callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getTracks()[0])
+        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getTracks()[1])
         //         }
         //     })
             
@@ -216,11 +232,14 @@ const Video = () => {
         //         setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
         //         setVideoStatus(true)
                 
+        //         console.log("tracks",stream.getTracks())
 
         //         for(let i=0;i<callData.current.length;i++)
         //         {
-        //             callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+        //             console.log("sender Data",callData.current[i].peerConnection.getSenders())
+
+        //            // callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getTracks()[0])
         //         }
         //     })
 
@@ -246,35 +265,43 @@ const Video = () => {
         
         if (!screenStatus) {
 
-    
-
-
+            console.log("otherScreen Status",otherScreenStatus.current)
+            
+            tempStreamObj.current = streamObject.current;
+            console.log("temporory holding video stream",tempStreamObj.current.getVideoTracks())
+            console.log("temporray holding audio tracks ",tempStreamObj.current.getAudioTracks())
             navigator.mediaDevices.getDisplayMedia({
-                video: true,
-                audio: true
+                video: true
             }).then((stream) => {
-                tempStreamObj.current = streamObject.current;
+                
+                console.log("after getting device data")
+                console.log("temporory holding video stream",tempStreamObj.current.getVideoTracks())
+                console.log("temporray holding audio tracks ",tempStreamObj.current.getAudioTracks())
+                stream.addTrack(tempStreamObj.current.getAudioTracks()[0])
                 streamObject.current = stream;
                 socketRef.current.emit("screenShared",roomId)
                 for(let i=0;i<callData.current.length;i++)
-                {
-                    callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(stream.getAudioTracks()[0])
+                {   console.log(i,"th iteration 1st sender ---> ", callData.current[i]?.peerConnection?.getSenders())
+                    console.log("my stream tracks ", stream.getTracks())
+                    console.log("myVideoTrack",stream.getVideoTracks())
+                    console.log("my audio tracks", stream.getAudioTracks())
+                 //  callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(tempStreamObj.current.getAudioTracks()[0])
                     callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(stream.getVideoTracks()[0])
                 }
 
 
-                setScreenData({ id: socketRef.current.id, stream: stream })
+                setScreenData({ id: socketRef.current.id, stream: stream ,muted:true})
                 setScreenStatus(true)
+                screenRef.current = true;
                 stream.getVideoTracks()[0].addEventListener('ended', () => stopScreen())
-            }).catch((error) => { })
+            }).catch((error) => {console.log("some error occured during sharing screen and error is \n",error) })
         }
 
         else {
            stopScreen()
         }
-
-
     },[screenStatus])
+
 
     const emitScreenShare = ()=> {
         console.log("emit Screenshare function executed & screenstatus is ",screenStatus)
@@ -284,25 +311,29 @@ const Video = () => {
 
   const stopScreen = useCallback( ()=> {
 
-
-
-
+    
+    console.log("tempStreamObj--->",tempStreamObj)
+    console.log("streamObjet --->",streamObject)
     streamObject.current.getVideoTracks()[0].stop()
+    console.log("streamObject holding screen data video Stream",streamObject.current.getVideoTracks())
+    console.log("streamObject holding screen data audio Stream",streamObject.current.getAudioTracks())
+    console.log("temporory holding video stream",tempStreamObj.current.getVideoTracks())
+    console.log("temporray holding audio tracks ",tempStreamObj.current.getAudioTracks())
     streamObject.current = tempStreamObj.current;
     screenRef.current =false;
     socketRef.current.emit("screenSharedStopped",roomId)
-
+        console.log("callData Object --->   ",callData.current)
     for(let i=0;i<callData.current.length;i++)
-        {
-            callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(streamObject.current.getAudioTracks()[0])
-            callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(streamObject.current.getVideoTracks()[0])
+        {       console.log("callData -->",callData.current[i])
+                console.log("audio track",callData.current[i]?.peerConnection?.getSenders()[0])
+                console.log("video track",callData.current[i]?.peerConnection?.getSenders()[1])
+           // callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(tempStreamObj.current.getAudioTracks()[0])
+            callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(tempStreamObj.current.getVideoTracks()[0])
         }
 
     setScreenStatus(false)
 
   }, [screenStatus])
-
-
 
     useEffect(() => {
         if (disconnectedId.size > 0) {
@@ -369,12 +400,12 @@ const Video = () => {
                     <VideoComponent classStyle="screen-share" key={screenData.id} id={screenData.id} stream={screenData.stream} muted={screenData.muted} />
 
                 </div>
-                :
+                : null}
 
-                <div id="video-place" >
+                <div id="video-place"  className={(screenStatus||otherScreenState)?"nodisplay" : ""} >
                     {videoStatus ?
                     <>   
-                        <VideoComponent id={myVideoData.id} stream={myVideoData.stream} muted={myVideoData.muted} classStyle="video-container" />
+                        <VideoComponent id={myVideoData.id} stream={myVideoData.stream} muted={myVideoData.muted} classStyle="video-container"  />
                     </>
                       
                         : null}
@@ -382,7 +413,7 @@ const Video = () => {
                         <VideoComponent key={e.id} id={e.id} stream={e.stream} muted={e.muted}  classStyle="video-container" />
                     )))}
                 </div>
-            }
+            
 
 
 
