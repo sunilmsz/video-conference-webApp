@@ -89,22 +89,7 @@ const Video = () => {
             })
 
 
-            socket.on("screenShared",(id)=> {
-                console.log("screenShared Event triggered",id)
-                console.log(videoData)
-                videoData.map( (element)=> {
-                    console.log(id,"socketid ------ videodata id-->",element.id)
-                        if(id==element.id)
-                        {
-                            setScreenData({id:id,stream:element.stream})
-                            setOtherScreenStatus(true)
-                        }
-                })
-            })
-
-            socket.on("screenSharedStopped",(id)=> {
-                setOtherScreenStatus(false)
-            })
+            
 
         }).catch((error) => { })
 
@@ -122,6 +107,25 @@ const Video = () => {
 
 
     }, [])
+
+
+    socketRef.current.on("screenShared",(id)=> {
+        console.log("screenShared Event triggered",id)
+        console.log(videoData)
+        videoData.map( (element)=> {
+            console.log(id,"socketid ------ videodata id-->",element.id)
+                if(id==element.id)
+                {
+                    setScreenData({id:id,stream:element.stream})
+                    setOtherScreenStatus(true)
+                }
+        })
+    })
+
+    socketRef.current.on("screenSharedStopped",(id)=> {
+        console.log("screenShared event trigged")
+        setOtherScreenStatus(false)
+    })
 
     useEffect(() => {
        
