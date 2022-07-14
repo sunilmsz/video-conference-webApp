@@ -23,7 +23,8 @@ const Dashboard = () => {
         headers: {
           "Content-Type": "application/json",
           'Accept': 'application/json'
-        }
+        },
+          withCredentials: true
       }
       const response = await axios(options)
       const data = response.data
