@@ -82,7 +82,7 @@ const login = async (req, res) => {
     res.cookie("x-api-key", token,
         {
             expires: new Date((new Date).getTime() + (7 * 24 * 60 * 60 * 1000)),
-            httpOnly: true
+            httpOnly: false
         })
     return res.status(200).send({ status: true, msg: "Success", data: user  })
 

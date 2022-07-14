@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate, useLocation } from "react-router-dom"
-import { useCookies } from "react-cookie";
+import Cookies from 'js-cookie'
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,7 +14,8 @@ const Dashboard = () => {
   const [showMeetLink,setShowMeetLink] = useState(false)
   const [showJoinMeet,setShowJoinMeet] = useState(false)
  const [showDashboard,setShowDashboard] = useState(false)
- const [cookies, setCookie, removeCookie] = useCookies(['x-api-key'])
+
+ 
   const isLoggedIn = async () => {
     try {
       const options = {
@@ -123,14 +124,15 @@ const Dashboard = () => {
 
   const logOut = useCallback(()=> {
 
-    removeCookie("x-api-key",{ path: '/' })
+    Cookies.remove("x-api-key")
+   
     navigate("/")
 
   })
 
     return (
       <>
-      { !showDashboard ? <>this is Executed</> :
+      { !showDashboard ? <></> :
         <div className='parent-to-center' >
           <div className='child-to-center  '>
             <div className='d-flex justify-content-around mt-3 mb-3'>
