@@ -259,6 +259,11 @@ const Video = () => {
         
         if (!screenStatus) {
 
+            if(otherScreenStatus.current)
+            {
+                alert("at a time only one person can share the screen")
+                return
+            }
             console.log("otherScreen Status",otherScreenStatus.current)
             
             tempStreamObj.current = streamObject.current;
