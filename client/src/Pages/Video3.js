@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { default as VideoComponent } from '../components/Video';
 import { v4 as uuidV4 } from 'uuid';
 import { useNavigate, useLocation } from "react-router-dom"
+import axios from 'axios'
 
 const Video = () => {
 
@@ -28,6 +29,7 @@ const Video = () => {
     const socketPeerMap = useRef()
     const navigate = useNavigate()
     const tempStreamObj = useRef()
+    const location = useLocation()
 
     const callLogin = async () => {
         try {
