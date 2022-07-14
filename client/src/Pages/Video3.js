@@ -74,7 +74,7 @@ const Video = () => {
         const socket = (io("/"))
 
         socketRef.current = socket;
-        const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" ,port:})
+        const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
         
        
         peer.on("open", id => {
