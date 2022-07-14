@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from 'axios'
 import { BsFillMicMuteFill,BsFillMicFill ,BsCameraVideoFill,BsFillCameraVideoOffFill} from 'react-icons/bs';
-import {MdScreenShare,MdStopScreenShare} from 'react-icons/md'
+import {MdScreenShare,MdStopScreenShare,MdMicOff,MdMic} from 'react-icons/md'
 
 const Video = () => {
 
@@ -459,7 +459,7 @@ const Video = () => {
             <div>
                     
                     <span className='meeting-text margin-left1' onClick={muteUnmute}>
-                    {audioStatus ?  <BsFillMicFill  size="1.2em"/>:  <BsFillMicMuteFill  size="1.2em"/>}</span>
+                    {audioStatus ?  <MdMic  size="1.2em"/>:  <MdMicOff  size="1.2em"/>}</span>
                     <span className='meeting-text margin-left1' onClick={(screenStatus) ? () => { } : startStopVideo}>{videoStatus ?<BsCameraVideoFill size="1.2em"/> : <BsFillCameraVideoOffFill size="1.2em"/>}</span>
                 </div>
                 <div > <span className='meeting-text ' onClick={startScreenShare}>
