@@ -19,7 +19,9 @@ const Video = () => {
     const [myVideoData, setMyVideoData] = useState({})
     const socketRef = useRef();
     const [stoppedUser, setStoppedUser] = useState([])
-    const [otherScreenStatus,setOtherScreenStatus] = useState(false)
+    const [otherScreenState,setOtherScreenState] = useState(false)
+    const otherScreenStatus = useRef(false)
+    const screenRef = useRef(false)
     const callData = useRef()
     const streamObject = useRef()
     const peerRef = useRef()
@@ -64,6 +66,7 @@ const Video = () => {
                   
                     setStreamData((data) => [...data, { stream: userVideoStream, socket_id: socket_id, nodisplay: false }])
                 })
+                setTimeout(()=>emitScreenShare(),0)
             })
 
             peer.on('call', function (call) {
@@ -117,6 +120,8 @@ const Video = () => {
 
 
     
+
+
     useEffect(() => {
        
         if (streamData.length > 0) {
@@ -136,14 +141,16 @@ const Video = () => {
                         if(id==element.socket_id)
                         {
                             setScreenData({id:element.socket_id,stream:element.stream})
-                            setOtherScreenStatus(true)
+                            setOtherScreenState(true)
+                            otherScreenStatus.current =true
                         }
                 })
             })
         
             socketRef.current.on("screenSharedStopped",()=> {
                 console.log("screenSharedstop event trigged")
-                setOtherScreenStatus(false)
+                setOtherScreenState(false)
+                otherScreenStatus.current = false
             })
         
 
@@ -239,11 +246,8 @@ const Video = () => {
         
         if (!screenStatus) {
 
-            if(otherScreenStatus){
-                alert("Someone other's Screen is already shared,At a time only one person can share the screen")
-                return
-            }
-          
+    
+
 
             navigator.mediaDevices.getDisplayMedia({
                 video: true,
@@ -254,8 +258,8 @@ const Video = () => {
                 socketRef.current.emit("screenShared",roomId)
                 for(let i=0;i<callData.current.length;i++)
                 {
-                    callData.current[i]?.peerConnection?.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-                    callData.current[i]?.peerConnection?.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+                    callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(stream.getAudioTracks()[0])
+                    callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(stream.getVideoTracks()[0])
                 }
 
 
@@ -272,22 +276,33 @@ const Video = () => {
 
     },[screenStatus])
 
+    const emitScreenShare = ()=> {
+        console.log("emit Screenshare function executed & screenstatus is ",screenStatus)
+        if(screenRef.current)
+        socketRef.current.emit("screenShared",roomId)
+    }
+
   const stopScreen = useCallback( ()=> {
+
+
+
 
     streamObject.current.getVideoTracks()[0].stop()
     streamObject.current = tempStreamObj.current;
-
+    screenRef.current =false;
     socketRef.current.emit("screenSharedStopped",roomId)
 
     for(let i=0;i<callData.current.length;i++)
         {
-            callData.current[i]?.peerConnection?.getSenders()[0].replaceTrack(streamObject.current.getAudioTracks()[0])
-            callData.current[i]?.peerConnection?.getSenders()[1].replaceTrack(streamObject.current.getVideoTracks()[0])
+            callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(streamObject.current.getAudioTracks()[0])
+            callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(streamObject.current.getVideoTracks()[0])
         }
 
     setScreenStatus(false)
 
   }, [screenStatus])
+
+
 
     useEffect(() => {
         if (disconnectedId.size > 0) {
@@ -348,7 +363,7 @@ const Video = () => {
         <div id="main-video-window">
 
 
-            {(screenStatus || otherScreenStatus)?
+            {(screenStatus || otherScreenState)?
                 <div >
 
                     <VideoComponent classStyle="screen-share" key={screenData.id} id={screenData.id} stream={screenData.stream} muted={screenData.muted} />
