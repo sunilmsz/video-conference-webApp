@@ -90,7 +90,7 @@ const Video = () => {
 
 
             socket.on("screenShared",(id)=> {
-
+                console.log("screenShared Event triggered")
                 videoData.forEach( (element)=> {
                         if(id==element.id)
                         {
