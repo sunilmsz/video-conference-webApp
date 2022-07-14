@@ -97,11 +97,18 @@ const Video = () => {
                 
             socketRef.current.disconnect()
             peerRef.current.destroy()
-            streamObject.current?.getVideoTracks()[0].stop()
-            streamObject.current?.getAudioTracks()[0].stop()
-
-            tempStreamObj.current?.getVideoTracks()[0].stop()
+            if(!screenData)
+            {
+                streamObject.current?.getVideoTracks()[0].stop()
+                streamObject.current?.getAudioTracks()[0].stop()
+            }
+           
+            else
+            {
+                tempStreamObj.current?.getVideoTracks()[0].stop()
             tempStreamObj.current?.getAudioTracks()[0].stop()
+            }
+            
             
         }
 
@@ -231,6 +238,10 @@ const Video = () => {
 
         
         if (!screenStatus) {
+
+            if(otherScreenStatus)
+            alert("Someone other's Screen is already shared,At a time only one person can share the screen")
+
             navigator.mediaDevices.getDisplayMedia({
                 video: true,
                 audio: true
@@ -240,8 +251,8 @@ const Video = () => {
                 socketRef.current.emit("screenShared",roomId)
                 for(let i=0;i<callData.current.length;i++)
                 {
-                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
+                    callData.current[i]?.peerConnection?.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
+                    callData.current[i]?.peerConnection?.getSenders()[1].replaceTrack(stream.getVideoTracks()[0])
                 }
 
 
