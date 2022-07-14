@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [showMeetLink,setShowMeetLink] = useState(false)
   const [showJoinMeet,setShowJoinMeet] = useState(false)
  const [showDashboard,setShowDashboard] = useState(false)
- const [logInKey, setLogInKey, removeLogInKey] = useCookies(['x-api-key'])
+ const [cookies, setCookie, removeCookie] = useCookies(['x-api-key'])
   const isLoggedIn = async () => {
     try {
       const options = {
@@ -123,7 +123,7 @@ const Dashboard = () => {
 
   const logOut = useCallback(()=> {
 
-    removeLogInKey("x-api-key")
+    removeCookie("x-api-key")
     navigate("/")
 
   })
