@@ -59,6 +59,14 @@ io.on("connection",(socket)=> {
         socket.broadcast.emit("user-video-stopped",socket.id)
     })
 
+    socket.on("screenShared",(roomId)=> {
+        socket.to(roomId).emit("screenShared",socket.id)
+    })
+
+    socket.on("screenSharedStopped",(roomId)=> {
+        socket.to(roomId).emit("screenSharedStopped",socket.id)
+    })
+
     socket.on("user-restarted-video",()=> {
         socket.broadcast.emit("user-restarted-video",socket.id)
     })

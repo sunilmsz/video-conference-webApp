@@ -19,6 +19,7 @@ const Video = () => {
     const [myVideoData, setMyVideoData] = useState({})
     const socketRef = useRef();
     const [stoppedUser, setStoppedUser] = useState([])
+    const [otherScreenStatus,setOtherScreenStatus] = useState(false)
     const callData = useRef()
     const streamObject = useRef()
     const peerRef = useRef()
@@ -85,6 +86,22 @@ const Video = () => {
 
                
                 setDisconnectedId((data) => new Set(data.add(id)))
+            })
+
+
+            socket.on("screenShared",(id)=> {
+
+                videoData.forEach( (element)=> {
+                        if(id==element.id)
+                        {
+                            setScreenData({id:id,stream:element.stream})
+                            setOtherScreenStatus(true)
+                        }
+                })
+            })
+
+            socket.on("screenSharedStopped",(id)=> {
+                setOtherScreenStatus(false)
             })
 
         }).catch((error) => { })
@@ -203,7 +220,7 @@ const Video = () => {
 
     const startScreenShare = useCallback(() => {
 
-        //socket.emit("screenShared",socket.id)
+        
         if (!screenStatus) {
             navigator.mediaDevices.getDisplayMedia({
                 video: true,
@@ -211,7 +228,7 @@ const Video = () => {
             }).then((stream) => {
                 tempStreamObj.current = streamObject.current;
                 streamObject.current = stream;
-
+                socketRef.current.emit("screenShared",roomId)
                 for(let i=0;i<callData.current.length;i++)
                 {
                     callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
@@ -219,7 +236,7 @@ const Video = () => {
                 }
 
 
-                setScreenData({ id: 1, stream: stream })
+                setScreenData({ id: socketRef.current.id, stream: stream })
                 setScreenStatus(true)
                 stream.getVideoTracks()[0].addEventListener('ended', () => setScreenStatus(false))
             }).catch((error) => { })
@@ -228,6 +245,8 @@ const Video = () => {
         else {
             streamObject.current.getVideoTracks()[0].stop()
             streamObject.current = tempStreamObj.current;
+
+            socketRef.current.emit("screenSharedStopped",roomId)
 
             for(let i=0;i<callData.current.length;i++)
                 {
@@ -302,7 +321,7 @@ const Video = () => {
         <div id="main-video-window">
 
 
-            {screenStatus ?
+            {screenStatus || otherScreenStatus?
                 <div >
 
                     <VideoComponent classStyle="screen-share" key={screenData.id} id={screenData.id} stream={screenData.stream} muted={screenData.muted} />
@@ -318,7 +337,7 @@ const Video = () => {
                       
                         : null}
                    {(videoData.map((e) => (
-                        <VideoComponent key={e.id} id={e.id} stream={e.stream} muted={e.muted}  classStyle="video-container2" />
+                        <VideoComponent key={e.id} id={e.id} stream={e.stream} muted={e.muted}  classStyle="video-container" />
                     )))}
                 </div>
             }
