@@ -125,8 +125,8 @@ const Video = () => {
                 console.log("screenShared Event triggered",id)
                 console.log(streamData)
                 streamData.map( (element)=> {
-                    console.log(id,"socketid ------ streamData id-->",element.id)
-                        if(id==element.id)
+                    console.log(id,"socketid ------ streamData id-->",element.socket_id)
+                        if(id==element.socket_id)
                         {
                             setScreenData({id:element.socket_id,stream:element.stream})
                             setOtherScreenStatus(true)
