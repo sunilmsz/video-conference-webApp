@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [showMeetLink,setShowMeetLink] = useState(false)
   const [showJoinMeet,setShowJoinMeet] = useState(false)
  const [showDashboard,setShowDashboard] = useState(false)
-
+ const [logInKey, setLogInKey, removeLogInKey] = useCookies(['x-api-key'])
   const isLoggedIn = async () => {
     try {
       const options = {
@@ -120,6 +120,12 @@ const Dashboard = () => {
   },[roomId])
 
 
+  const logOut = useCallback(()=> {
+
+    removeLogInKey("x-api-key")
+    navigate("/")
+
+  })
 
     return (
       <>
@@ -133,7 +139,7 @@ const Dashboard = () => {
                 setShowMeetLink(false)
                 setShowJoinMeet(true)
               }}>Join Meeting</button>
-              <button className="btn btn-primary">LogOut</button>
+              <button className="btn btn-primary" onClick={()=> logOut() }>LogOut</button>
             </div>
 
             {
