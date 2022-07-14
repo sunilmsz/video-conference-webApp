@@ -270,8 +270,8 @@ const Video = () => {
 
             for(let i=0;i<callData.current.length;i++)
                 {
-                    callData.current[i].peerConnection.getSenders()[0].replaceTrack(streamObject.current.getAudioTracks()[0])
-                    callData.current[i].peerConnection.getSenders()[1].replaceTrack(streamObject.current.getVideoTracks()[0])
+                    callData.current[i]?.peerConnection?.getSenders()[0].replaceTrack(streamObject.current.getAudioTracks()[0])
+                    callData.current[i]?.peerConnection?.getSenders()[1].replaceTrack(streamObject.current.getVideoTracks()[0])
                 }
 
             setScreenStatus(false)
