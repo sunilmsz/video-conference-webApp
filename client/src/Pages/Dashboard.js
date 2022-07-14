@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [allowed, setAllowed] = useState(false)
+  
   const [meetLink, setMeetLink] = useState("")
   const [inviteCode, setInviteCode] = useState("")
   const [jInviteCode,setjInviteCode] = useState("")
@@ -13,36 +13,37 @@ const Dashboard = () => {
   const [roomId,setRoomId]= useState("")
   const [showMeetLink,setShowMeetLink] = useState(false)
   const [showJoinMeet,setShowJoinMeet] = useState(false)
- 
+ const [showDashboard,setShowDashboard] = useState(false)
 
-  //   const callLogin = async () => {
-  //     try {
-  //       const options = {
-  //         method: "post",
-  //         url: "http://localhost:3001/users/dashboard",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           'Accept': 'application/json'
-  //         },
-  //         withCredentials: true
-  //       }
-  //       const response = await axios(options)
-  //       const data = response.data
-  //       console.log(data)
-  //       if (data.msg === "Success")
-  //         setAllowed(true)
-  //     }
-  //     catch (error) {
-  //       if (error.response.data.msg != "Success") {
-  //         navigate("/")
-  //       }
-  //     }
-  //   }
+  const isLoggedIn = async () => {
+    try {
+      const options = {
+        method: "post",
+        url: "/api/users/dashboard",
+        headers: {
+          "Content-Type": "application/json",
+          'Accept': 'application/json'
+        }
+      }
+      const response = await axios(options)
+      const data = response.data
+      console.log(data)
+      if (data.msg === "Success")
+        setShowDashboard(true)
+    }
+    catch (error) {
+      if (error.response.data.msg != "Success") {
+        navigate("/")
+      }
+    }
+  }
 
 
   useEffect(() => {
     if (!location.state)
-      navigate("/")
+    {
+    isLoggedIn()
+    }
 
 
   }, [])
@@ -117,7 +118,7 @@ const Dashboard = () => {
   },[roomId])
 
 
-  if (!location.state) {
+  if (!showDashboard) {
     <></>
   }
   else
