@@ -44,6 +44,8 @@ const Dashboard = () => {
     {
     isLoggedIn()
     }
+    else
+    setShowDashboard(true)
 
 
   }, [])
@@ -121,6 +123,7 @@ const Dashboard = () => {
 
     return (
       <>
+      { !showDashboard ? <>this is Executed</> :
         <div className='parent-to-center' >
           <div className='child-to-center  '>
             <div className='d-flex justify-content-around mt-3 mb-3'>
@@ -153,6 +156,7 @@ const Dashboard = () => {
 
           </div>
         </div>
+}
       </>
     )
 
