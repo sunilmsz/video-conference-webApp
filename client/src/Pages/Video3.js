@@ -128,7 +128,7 @@ const Video = () => {
                     console.log(id,"socketid ------ streamData id-->",element.id)
                         if(id==element.id)
                         {
-                            setScreenData({id:id,stream:element.stream})
+                            setScreenData({id:element.socket_id,stream:element.stream})
                             setOtherScreenStatus(true)
                         }
                 })
