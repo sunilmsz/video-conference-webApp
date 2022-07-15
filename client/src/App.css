@@ -76,25 +76,33 @@ html,body{
     box-sizing: border-box;
 }
 
+
 #meeting-control {
     height: 5vh;
     background-color: black;
     display:flex;
-    justify-content: space-between;
+    justify-content: center;
+}
+
+#meting-control-container > * {
+    margin-left:1.5em;
+    margin-right:1.5em;
 }
 
 .meeting-icon {
     height: 5vh;
-    margin-left: 1rem;
+ 
     color:white;
 }
 
 .meeting-text {
     line-height: 5vh;
     color:white;
-    font-size: 1.2em;
+   
     cursor: pointer;
 }
+
+
 
 .margin-left1 {
     margin-left: 1em;

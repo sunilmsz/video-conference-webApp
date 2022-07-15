@@ -8,6 +8,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import axios from 'axios'
 import { BsFillMicMuteFill,BsFillMicFill ,BsCameraVideoFill,BsFillCameraVideoOffFill} from 'react-icons/bs';
 import {MdScreenShare,MdStopScreenShare,MdMicOff,MdMic} from 'react-icons/md'
+import {GiExitDoor} from 'react-icons/gi'
 
 const Video = () => {
 
@@ -367,19 +368,17 @@ const Video = () => {
 
 
 
-
-            <div id="meeting-control">
-            <div>
+                <div id="meeting-control">
+                <div id="meting-control-container">
                     
                     <span className='meeting-text margin-left1' onClick={muteUnmute}>
                     {audioStatus ?  <MdMic  size="1.2em"/>:  <MdMicOff  size="1.2em"/>}</span>
                     <span className='meeting-text margin-left1' onClick={(screenStatus) ? () => { } : startStopVideo}>{videoStatus ?<BsCameraVideoFill size="1.2em"/> : <BsFillCameraVideoOffFill size="1.2em"/>}</span>
-                </div>
-                <div > <span className='meeting-text ' onClick={startScreenShare}>
-                    {!screenStatus ? <MdScreenShare size="1.2em"/> : <MdStopScreenShare size="1.2em"/>}</span></div>
-                <div><span className='meeting-text margin-left1 text-danger' onClick={leaveMeeting}>Leave</span></div>
+                    <span className='meeting-text ' onClick={startScreenShare}>
+                    {!screenStatus ? <MdScreenShare size="1.2em"/> : <MdStopScreenShare size="1.2em"/>}</span>
+                    
+             <span className='meeting-text margin-left1 ' onClick={leaveMeeting}>< GiExitDoor size ="1.2em"/></span></div>
             </div>
-        
         </div>
     )
 }
