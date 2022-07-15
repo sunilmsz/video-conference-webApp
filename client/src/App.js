@@ -14,6 +14,9 @@ import {BrowserRouter as Router,Switch,Route,Link,Routes} from 'react-router-dom
 import "./App.css"
 
 function App() {
+
+  document.title ="SK Meet "
+
   return (
    <>
 

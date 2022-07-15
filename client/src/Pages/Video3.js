@@ -47,7 +47,7 @@ const Video = () => {
           }
           const response = await axios(options)
           const data = response.data
-          console.log(data)
+          
           if (data.msg === "Success")
              {return true;}
         }
@@ -149,7 +149,6 @@ const Video = () => {
         )
 
         socket.on("user-disconnected", (id) => {
-            //console.log("peer Connections ---->",peer.connections)
             setDisconnectedId((data) => new Set(data.add(id)))
         })
     },[])
@@ -170,16 +169,10 @@ const Video = () => {
             }
 
             socketRef.current.on("screenShared",(id)=> {
-                console.log("screenShared Event triggered",id)
-                console.log(streamData)
                 setTimeout(() => {
                     streamData.map( (element)=> {
-                        console.log(id,"socketid ------ streamData id-->",element.socket_id)
                             if(id==element.socket_id)
                             {
-                                console.log("shared person's video stream --->   ",element.stream.getVideoTracks())
-                                console.log("shared person's audio stream --->   ",element.stream.getAudioTracks())
-
                                 setScreenData({id:element.socket_id,stream:element.stream})
                                 setOtherScreenState(true)
                                 otherScreenStatus.current =true
@@ -189,7 +182,6 @@ const Video = () => {
             })
         
             socketRef.current.on("screenSharedStopped",()=> {
-                console.log("screenSharedstop event trigged")
                 setOtherScreenState(false)
                 otherScreenStatus.current = false
             })
@@ -201,76 +193,16 @@ const Video = () => {
 
     const startStopVideo = useCallback(() => {
 
-
-        
         if (videoStatus) {
-            console.log("StartStopVieo if part executed")
             myVideoData.stream.getVideoTracks()[0].enabled =false
             setVideoStatus(false)
-            console.log(myVideoData.stream, "after stopping video")
-           
             socketRef.current.emit("user-video-stopped")
   
         }
         else {
-            console.log("StartStopVieo Else part executed")
             myVideoData.stream.getVideoTracks()[0].enabled =true
             setVideoStatus(true)
         }
-        // if (videoStatus) {
-        //     console.log("StartStopVieo if part executed")
-        //     myVideoData.stream.getVideoTracks()[0].stop()
-        //     setVideoStatus(false)
-
-        //     navigator.mediaDevices.getUserMedia({
-        //         audio: true
-        //     }).then((stream) => {
-
-        //         stream.getAudioTracks()[0].enabled=audioStatus
-        //         streamObject.current=stream
-        //         setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
-               
-        //         console.log(myVideoData.stream, "after stopping video")
-           
-        //          socketRef.current.emit("user-video-stopped")
-        //          console.log("tracks",stream.getTracks())
-
-        //         for(let i=0;i<callData.current.length;i++)
-        //         {
-        //             console.log("sender Data",callData.current[i].peerConnection.getSenders())
-        //             callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getTracks()[0])
-        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getTracks()[1])
-        //         }
-        //     })
-            
-
-            
-  
-        // }
-        // else {
-        //     console.log("StartStopVieo Else part executed")
-        //     navigator.mediaDevices.getUserMedia({
-        //         video: true,
-        //         audio: true
-        //     }).then((stream) => {
-
-        //         stream.getAudioTracks()[0].enabled=audioStatus
-        //         streamObject.current=stream
-        //         setMyVideoData({ id: socketRef.current.id, stream:stream, muted: true, nodisplay: false })
-        //         setVideoStatus(true)
-                
-        //         console.log("tracks",stream.getTracks())
-
-        //         for(let i=0;i<callData.current.length;i++)
-        //         {
-        //             console.log("sender Data",callData.current[i].peerConnection.getSenders())
-
-        //            // callData.current[i].peerConnection.getSenders()[0].replaceTrack(stream.getAudioTracks()[0])
-        //             callData.current[i].peerConnection.getSenders()[1].replaceTrack(stream.getTracks()[0])
-        //         }
-        //     })
-
-        // }
 
     },[videoStatus])
 
@@ -279,7 +211,6 @@ const Video = () => {
         if (audioStatus) {
             myVideoData.stream.getAudioTracks()[0].enabled = false;
             setAudioStatus(false)
-            console.log("after muting", myVideoData.stream)
         }
         else {
             myVideoData.stream.getAudioTracks()[0].enabled = true;
@@ -297,26 +228,18 @@ const Video = () => {
                 alert("at a time only one person can share the screen")
                 return
             }
-            console.log("otherScreen Status",otherScreenStatus.current)
             
             tempStreamObj.current = streamObject.current;
-            console.log("temporory holding video stream",tempStreamObj.current.getVideoTracks())
-            console.log("temporray holding audio tracks ",tempStreamObj.current.getAudioTracks())
             navigator.mediaDevices.getDisplayMedia({
                 video: true
             }).then((stream) => {
                 
-                console.log("after getting device data")
-                console.log("temporory holding video stream",tempStreamObj.current.getVideoTracks())
-                console.log("temporray holding audio tracks ",tempStreamObj.current.getAudioTracks())
+                
                 stream.addTrack(tempStreamObj.current.getAudioTracks()[0])
                 streamObject.current = stream;
                 socketRef.current.emit("screenShared",roomId)
                 for(let i=0;i<callData.current.length;i++)
-                {   console.log(i,"th iteration 1st sender ---> ", callData.current[i]?.peerConnection?.getSenders())
-                    console.log("my stream tracks ", stream.getTracks())
-                    console.log("myVideoTrack",stream.getVideoTracks())
-                    console.log("my audio tracks", stream.getAudioTracks())
+                {   
                  //  callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(tempStreamObj.current.getAudioTracks()[0])
                     callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(stream.getVideoTracks()[0])
                 }
@@ -326,7 +249,7 @@ const Video = () => {
                 setScreenStatus(true)
                 screenRef.current = true;
                 stream.getVideoTracks()[0].addEventListener('ended', () => stopScreen())
-            }).catch((error) => {console.log("some error occured during sharing screen and error is \n",error) })
+            }).catch((error) => {})
         }
 
         else {
@@ -336,29 +259,21 @@ const Video = () => {
 
 
     const emitScreenShare = ()=> {
-        console.log("emit Screenshare function executed & screenstatus is ",screenStatus)
         if(screenRef.current)
         socketRef.current.emit("screenShared",roomId)
     }
 
   const stopScreen = useCallback( ()=> {
 
-    
-    console.log("tempStreamObj--->",tempStreamObj)
-    console.log("streamObjet --->",streamObject)
+   
     streamObject.current.getVideoTracks()[0].stop()
-    console.log("streamObject holding screen data video Stream",streamObject.current.getVideoTracks())
-    console.log("streamObject holding screen data audio Stream",streamObject.current.getAudioTracks())
-    console.log("temporory holding video stream",tempStreamObj.current.getVideoTracks())
-    console.log("temporray holding audio tracks ",tempStreamObj.current.getAudioTracks())
+   
     streamObject.current = tempStreamObj.current;
     screenRef.current =false;
     socketRef.current.emit("screenSharedStopped",roomId)
-        console.log("callData Object --->   ",callData.current)
+       
     for(let i=0;i<callData.current.length;i++)
-        {       console.log("callData -->",callData.current[i])
-                console.log("audio track",callData.current[i]?.peerConnection?.getSenders()[0])
-                console.log("video track",callData.current[i]?.peerConnection?.getSenders()[1])
+        {     
            // callData.current[i]?.peerConnection?.getSenders()[0]?.replaceTrack(tempStreamObj.current.getAudioTracks()[0])
             callData.current[i]?.peerConnection?.getSenders()[1]?.replaceTrack(tempStreamObj.current.getVideoTracks()[0])
         }
@@ -370,16 +285,14 @@ const Video = () => {
     useEffect(() => {
         if (disconnectedId.size > 0) {
             
-            console.log("removing element executed")
-
-            console.log("socketPeerMap",socketPeerMap.current)
+           
 
             setVideoData(videoData.filter((e) => !disconnectedId.has(e.id)))
             setStreamData(streamData.filter((e) => !disconnectedId.has(e.socket_id)))
 
             for(let socket of disconnectedId.values())
             {       
-                console.log("disconnected socket id",socket)
+                
                 if(socketPeerMap.current.has(socket))
                 {
                     socketPeerMap.current.get(socket).close();
@@ -389,7 +302,7 @@ const Video = () => {
                         setOtherScreenState(false)
                         otherScreenStatus.current=false
                     }
-                    console.log("after closing peer connection--->",peerRef.current.connections)
+                   
                 }
             }
         }
@@ -397,7 +310,7 @@ const Video = () => {
 
 
     useEffect(() => {
-        console.log("stopped user executed ")
+       
         if (stoppedUser.length > 0)
         {       
             let obj;
@@ -408,7 +321,7 @@ const Video = () => {
                     setTimeout(() => {
                         video.load()
                     }, 1000); 
-                     console.log(video)
+                     
                   setStoppedUser(stoppedUser.filter((e)=> !stoppedUser.includes(obj.id)))
                 }
             })
