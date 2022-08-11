@@ -14,33 +14,42 @@ function randomSt(length) {
     return result;
 }
 
-const dashboard =async (req,res) => {
-try{    
-    console.log("dashboard Called")
+const dashboard = async (req, res) => {
+    try {
         delete req.userData.password
-        res.status(200).send({status:true,msg:"Success",data:req.userData})
-}
-catch(error){
-    res.status(500).send({status:false,msg:"Internal Server Error"})
-}
-}
-
-
-const getRoomId = async(req,res) => {
-   const userId = req.userData._id;
-   const code = randomSt(8)
-    const room = await roomModel.create({userId,code})
-
-    return res.status(201).send({status:true,msg:"Success",data:room})
+        res.status(200).send({ status: true, msg: "Success", data: req.userData })
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: "Internal Server Error" })
+    }
 }
 
-const getRoomIdByCode = async(req,res) => {
-    const code = req.body.code
-    const room = await roomModel.findOne({code:code}).lean()
-    if(!room)
-    return res.status(400).send({status:false,msg:"Invalid Invite code, please enter correct one"})
 
-    return res.status(200).send({status:true,msg:"Success",data:room._id})
+const getRoomId = async (req, res) => {
+    try {
+        const userId = req.userData._id;
+        const code = randomSt(8)
+        const room = await roomModel.create({ userId, code })
+
+        return res.status(201).send({ status: true, msg: "Success", data: room })
+    } catch (error) {
+        return res.status(500).send({ status: false, msg: "Internal Server Error" })
+    }
+
 }
 
-module.exports = {dashboard,getRoomId,getRoomIdByCode}
+const getRoomIdByCode = async (req, res) => {
+    try {
+        const code = req.body.code
+        const room = await roomModel.findOne({ code: code }).lean()
+        if (!room)
+            return res.status(400).send({ status: false, msg: "Invalid Invite code, please enter correct one" })
+
+        return res.status(200).send({ status: true, msg: "Success", data: room._id })
+    } catch (error) {
+        return res.status(500).send({ status: false, msg: "Internal Server Error" })
+    }
+
+}
+
+module.exports = { dashboard, getRoomId, getRoomIdByCode }

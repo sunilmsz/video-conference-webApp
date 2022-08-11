@@ -1,96 +1,78 @@
 const dotenv = require("dotenv")
 const express = require("express")
 const cookiParser = require("cookie-parser")
-const {v4} = require("uuid")
-const {ExpressPeerServer} = require("peer")
+const { ExpressPeerServer } = require("peer")
 const app = express()
 
 const http = require("http").Server(app)
 
-const peerServer = ExpressPeerServer(http,{
-    debug:true
-});
+const peerServer = ExpressPeerServer(http);
 
-app.use("/peerjs",peerServer)
+app.use("/peerjs", peerServer)
 const mongoose = require("mongoose")
-const io = require("socket.io")(http
-//     ,{
-//     // cors:{
-//     //     origin:"http://localhost:3000"
-//     // }
-// }
-)
-const multer = require("multer")
+const io = require("socket.io")(http)
+
 const cors = require("cors")
-const bodyParser = require("body-parser")
+
 const router = require("./routes/route")
 
-// app.use(
-//     cors({
-//       origin: `https://mern-meet-up.herokuapp.com`
-//     }))
-
-dotenv.config({path:"./config.env"})
+dotenv.config({ path: "./config.env" })
 const DBKey = process.env.DB
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer().any())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookiParser())
 
 
-app.use("/",router)
-mongoose.connect(DBKey,{
-    useNewurlParser:true
-}).then(()=>{
-    console.log("MoongoDB is connected")
-}).catch(err=>console.log(err));
+app.use("/", router)
 
-io.on("connection",(socket)=> {
+mongoose.connect(DBKey, { useNewurlParser: true })
+    .then(() => { console.log("MoongoDB is connected") })
+    .catch(err => console.log(err));
 
-    console.log(`user connected : ${socket.id}`)
-    socket.on("nuser-joined",(roomId,peerId)=> {
+io.on("connection", (socket) => {
+
+
+    socket.on("nuser-joined", (roomId, peerId) => {
         socket.join(roomId)
-        console.log(roomId)
-        socket.to(roomId).emit("user-connected",peerId,socket.id)
-        console.log(peerId,"peerid")
+        socket.to(roomId).emit("user-connected", peerId, socket.id)
+
     })
-    socket.on("user-video-stopped",()=> {
-        socket.broadcast.emit("user-video-stopped",socket.id)
+    socket.on("user-video-stopped", () => {
+        socket.broadcast.emit("user-video-stopped", socket.id)
     })
 
-    socket.on("screenShared",(roomId)=> {
-        socket.broadcast.to(roomId).emit("screenShared",socket.id)
+    socket.on("screenShared", (roomId) => {
+        socket.broadcast.to(roomId).emit("screenShared", socket.id)
     })
 
-    socket.on("screenSharedStopped",(roomId)=> {
-        socket.broadcast.to(roomId).emit("screenSharedStopped",socket.id)
+    socket.on("screenSharedStopped", (roomId) => {
+        socket.broadcast.to(roomId).emit("screenSharedStopped", socket.id)
     })
 
-    socket.on("user-restarted-video",()=> {
-        socket.broadcast.emit("user-restarted-video",socket.id)
+    socket.on("user-restarted-video", () => {
+        socket.broadcast.emit("user-restarted-video", socket.id)
     })
 
-    socket.on("disconnect",()=> {
-        console.log(`user disconnected : ${socket.id}`)
-        socket.broadcast.emit("user-disconnected",socket.id)
-        console.log(socket.rooms)
+    socket.on("disconnect", () => {
+        socket.broadcast.emit("user-disconnected", socket.id)
     })
 
 })
 
 const path = require('path');
 if (process.env.NODE_ENV === 'production') {
-  // Serve any static files
-  app.use(express.static('client/build'));
-// Handle React routing, return all requests to React app
-  app.get('/*', function(req, res) {
-    res.sendFile(path.resolve('client','build','index.html'));
-  });
+    // Serve any static files
+    app.use(express.static('client/build'));
+    // Handle React routing, return all requests to React app
+    app.get('/*', function (req, res) {
+        res.sendFile(path.resolve('client', 'build', 'index.html'));
+    });
 }
 
 
 
-http.listen(process.env.PORT  , function() {
+http.listen(process.env.PORT, function () {
     console.log('Express app running on port ' + (process.env.PORT))
 });

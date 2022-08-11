@@ -88,10 +88,6 @@ const Video = () => {
             streamObject.current?.getAudioTracks()[0].stop()
             tempStreamObj.current?.getVideoTracks()[0].stop()
             tempStreamObj.current?.getAudioTracks()[0].stop()
-
-
-
-
         }
 
     }, [])
@@ -285,15 +281,11 @@ const Video = () => {
 
     useEffect(() => {
         if (disconnectedId.size > 0) {
-            
-           
-
             setVideoData(videoData.filter((e) => !disconnectedId.has(e.id)))
             setStreamData(streamData.filter((e) => !disconnectedId.has(e.socket_id)))
 
             for(let socket of disconnectedId.values())
             {       
-                
                 if(socketPeerMap.current.has(socket))
                 {
                     socketPeerMap.current.get(socket).close();
@@ -303,7 +295,6 @@ const Video = () => {
                         setOtherScreenState(false)
                         otherScreenStatus.current=false
                     }
-                   
                 }
             }
         }
@@ -332,11 +323,7 @@ const Video = () => {
 
 
     const leaveMeeting = useCallback(()=>{
-
-           
-
         navigate("/dashboard",{state:{}})
-
     },[])
 
 
