@@ -92,6 +92,8 @@ const Video = () => {
 
     }, [])
 
+    //establishing socket.IO and peerJs Connection
+    // defining events for both socket.Io and PeerJs
 
     const connect = useCallback( ()=> {
        
@@ -100,7 +102,7 @@ const Video = () => {
         socketRef.current = socket;
         const peer = new Peer(uuidV4(), { path: "/peerjs", host: "/" })
         
-       
+    
         peer.on("open", id => {
             socket.emit("nuser-joined", roomId, id)
             peerRef.current = peer
@@ -115,7 +117,7 @@ const Video = () => {
         setMyVideoData({ id: socket.id, stream: streamObject.current, muted: true, nodisplay: false })
        
         setVideoStatus(true);
-        setAudioStatus(true)
+        setAudioStatus(true);
         // setVideoData([...videoData, { id: socket.id, stream: stream, muted: true }])
        
       
@@ -290,7 +292,8 @@ const Video = () => {
                 {
                     socketPeerMap.current.get(socket).close();
                     socketPeerMap.current.delete(socket)
-                    if(otherScreenStatus.current)
+
+                    if(otherScreenStatus.current && screenData.id ==socket)
                     {
                         setOtherScreenState(false)
                         otherScreenStatus.current=false
