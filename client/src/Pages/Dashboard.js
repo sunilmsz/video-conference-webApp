@@ -70,7 +70,7 @@ const Dashboard = () => {
     }
     axios(options)
       .then((response) => {
-        setMeetLink(`https://skmeet.herokuapp.com/video/${response.data.data._id}`)
+        setMeetLink(`https://skmeet.up.railway.app/video/${response.data.data._id}`)
         setInviteCode(response.data.data.code)
         setRoomId(response.data.data._id)
         setShowMeetLink(true)
